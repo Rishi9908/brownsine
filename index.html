@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopPro — Premium Marketplace</title>
+<meta name="description" content="ShopPro - Your premium online marketplace for electronics, fashion, beauty and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { inter: ['Inter', 'sans-serif'] },
+        colors: {
+          primary: '#7c3aed',
+          'primary-light': '#8b5cf6',
+          'primary-dark': '#6d28d9',
+          accent: '#a78bfa',
+        },
+        boxShadow: {
+          card: '0 2px 20px rgba(124,58,237,0.07)',
+          hover: '0 16px 48px rgba(124,58,237,0.18)',
+          glass: '0 8px 32px rgba(124,58,237,0.12)',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+  body { background: #f3f0ff; min-height: 100vh; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 10px; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Range slider */
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 3px;
+    background: linear-gradient(to right, #7c3aed 0%, #7c3aed var(--val, 100%), #e5e7eb var(--val, 100%));
+    border-radius: 10px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: #7c3aed;
+    cursor: pointer; border: 2.5px solid white;
+    box-shadow: 0 2px 8px rgba(124,58,237,0.5);
+    transition: transform 0.2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  /* Wishlist heart */
+  .wishlist-btn { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+  .wishlist-btn.active { color: #7c3aed !important; background: #ede9fe !important; }
+  .wishlist-btn:hover { transform: scale(1.15); }
+
+  /* Product card */
+  .product-card {
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid rgba(124,58,237,0.06);
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(124,58,237,0.14);
+    border-color: rgba(124,58,237,0.12);
+  }
+  .product-card:hover .card-img { transform: scale(1.07); }
+  .card-img { transition: transform 0.45s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Flying animation */
+  .fly-clone {
+    position: fixed; border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 1;
+  }
+
+  /* Category tab */
+  .cat-tab {
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    white-space: nowrap;
+  }
+  .cat-tab.active {
+    background: #7c3aed !important;
+    color: white !important;
+    border-color: #7c3aed !important;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+  }
+  .cat-tab:not(.active):hover {
+    border-color: #a78bfa;
+    color: #7c3aed;
+    background: #faf5ff;
+  }
+
+  /* Navbar glass effect */
+  .navbar-glass {
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* Badges */
+  .badge-top { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #1f2937; }
+  .badge-sale { background: linear-gradient(135deg, #10b981, #34d399); color: white; }
+  .badge-new { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; }
+
+  /* Add to cart btn */
+  .add-btn {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(124,58,237,0.25);
+  }
+  .add-btn:hover {
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+    box-shadow: 0 6px 20px rgba(124,58,237,0.42);
+    transform: translateY(-1px);
+  }
+  .add-btn:active { transform: translateY(0); }
+
+  /* Sidebar checkbox */
+  input[type=checkbox] { accent-color: #7c3aed; }
+
+  /* Stars */
+  .star { color: #f59e0b; }
+
+  /* Cart badge pulse */
+  .cart-count-badge { animation: badgePulse 2.5s infinite; }
+  @keyframes badgePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(124,58,237,0.5); }
+    50% { transform: scale(1.12); box-shadow: 0 0 0 4px rgba(124,58,237,0); }
+  }
+
+  /* Hero gradient */
+  .hero-strip {
+    background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 40%, #a78bfa 80%, #c4b5fd 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-strip::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Shimmer */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Mobile sidebar overlay */
+  #sidebar-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(15,0,50,0.45);
+    z-index: 40; backdrop-filter: blur(3px);
+  }
+  #sidebar-overlay.active { display: block; }
+  #mobile-sidebar { transition: transform 0.38s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Sidebar glass */
+  .sidebar-glass {
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(20px);
+  }
+
+  /* Price chart */
+  .price-chart-area {
+    background: linear-gradient(to bottom, rgba(124,58,237,0.12), rgba(124,58,237,0.03));
+    border-radius: 8px;
+  }
+
+  /* Floating label effect on search */
+  @keyframes searchFocus {
+    from { box-shadow: 0 0 0 0 rgba(124,58,237,0); }
+    to { box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+  }
+  #search-input:focus { animation: searchFocus 0.3s ease forwards; }
+
+  /* Result count */
+  .result-badge {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Empty state */
+  @keyframes floatUp {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  #empty-state .float-icon { animation: floatUp 3s ease-in-out infinite; }
+
+  /* Slide up on render */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .product-card { animation: slideUp 0.35s ease forwards; }
+</style>
+</head>
+<body class="bg-[#f3f0ff] min-h-screen">
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar-glass sticky top-0 z-50 border-b border-purple-100/80 shadow-sm">
+  <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3 sm:gap-5">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-2.5 flex-shrink-0">
+      <div class="w-9 h-9 rounded-[10px] bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
+        <span class="text-white font-black text-sm tracking-tight">SP</span>
+      </div>
+      <span id="site-name" class="text-[1.1rem] font-black text-gray-900 tracking-tight hidden sm:block">ShopPro</span>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="flex-1 max-w-[480px]">
+      <div class="relative">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </span>
+        <input id="search-input" type="text" placeholder="Search products, brands..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 bg-gray-50/80 text-sm text-gray-700 placeholder-gray-400
+                 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 focus:bg-white transition-all duration-200">
+      </div>
+    </div>
+
+    <!-- Nav Actions -->
+    <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
+      <!-- Orders -->
+      <a href="#" class="hidden md:flex items-center gap-1.5 text-gray-500 hover:text-primary transition-all px-3 py-2 rounded-xl hover:bg-purple-50 text-sm font-medium">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Orders
+      </a>
+      <!-- Favourites -->
+      <button id="fav-btn" onclick="showWishlist()" class="hidden md:flex items-center gap-1.5 text-gray-500 hover:text-primary transition-all px-3 py-2 rounded-xl hover:bg-purple-50 text-sm font-medium">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+        Favourites
+        <span id="fav-count" class="bg-purple-100 text-primary text-xs font-bold px-1.5 rounded-full hidden">0</span>
+      </button>
+      <!-- Cart -->
+      <a href="cart.html" id="cart-icon"
+         class="relative flex items-center gap-2 bg-gradient-to-r from-primary to-primary-light text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow hover:shadow-md hover:scale-[1.03] transition-all duration-200">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        Cart
+        <span id="cart-count" class="cart-count-badge absolute -top-2 -right-2 bg-yellow-400 text-gray-900 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm">0</span>
+      </a>
+      <!-- Mobile filter toggle -->
+      <button id="mobile-filter-btn" class="md:hidden w-9 h-9 rounded-xl flex items-center justify-center hover:bg-purple-50 text-gray-500 hover:text-primary transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+        </svg>
+      </button>
+      <!-- Avatar / Login -->
+      <a id="avatar-btn" href="login.html"
+         class="hidden md:flex items-center gap-2 ml-1 group cursor-pointer">
+        <div id="avatar-circle"
+             class="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400 to-primary flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:shadow-md transition-shadow">
+          ?
+        </div>
+        <span id="avatar-name" class="text-sm font-semibold text-gray-600 group-hover:text-primary transition-colors hidden"></span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO STRIP ===== -->
+<div class="hero-strip py-6 px-4 sm:px-8">
+  <div class="max-w-[1440px] mx-auto flex items-center justify-between flex-wrap gap-4">
+    <div class="text-white">
+      <h1 class="text-2xl sm:text-3xl font-black leading-tight tracking-tight">
+        Welcome to <span id="hero-name" class="text-yellow-300">ShopPro</span> 🛍️
+      </h1>
+      <p class="text-purple-200 text-sm mt-1 font-medium">Discover premium products at the best prices</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="bg-white/18 backdrop-blur border border-white/20 rounded-2xl px-5 py-2.5 text-white text-center shadow-sm">
+        <div class="font-black text-2xl" id="total-product-count">48</div>
+        <div class="text-xs text-purple-200 font-medium mt-0.5">Products</div>
+      </div>
+      <div class="bg-white/18 backdrop-blur border border-white/20 rounded-2xl px-5 py-2.5 text-white text-center shadow-sm">
+        <div class="font-black text-2xl" id="category-count">10</div>
+        <div class="text-xs text-purple-200 font-medium mt-0.5">Categories</div>
+      </div>
+      <div class="bg-white/18 backdrop-blur border border-white/20 rounded-2xl px-5 py-2.5 text-white text-center shadow-sm hidden sm:block">
+        <div class="font-black text-2xl">4.8</div>
+        <div class="text-xs text-purple-200 font-medium mt-0.5">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CATEGORY TABS ===== -->
+<div class="bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm sticky top-[57px] z-40">
+  <div class="max-w-[1440px] mx-auto px-4 sm:px-6">
+    <div id="category-tabs" class="flex gap-2 overflow-x-auto py-3 no-scrollbar">
+      <!-- JS populates -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex gap-5">
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside id="mobile-sidebar"
+    class="fixed md:static top-0 left-0 h-full md:h-auto w-72 md:w-64 lg:w-[270px] flex-shrink-0
+           sidebar-glass rounded-none md:rounded-2xl shadow-glass md:shadow-card z-50 md:z-auto
+           translate-x-[-100%] md:translate-x-0 overflow-y-auto
+           p-5 md:self-start md:sticky md:top-[122px]">
+
+    <!-- Sidebar Header (mobile close btn) -->
+    <div class="flex items-center justify-between mb-5 md:hidden">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm">Filters</h3>
+      </div>
+      <button id="close-sidebar" class="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Price Range -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-1.5">
+        <h3 class="font-semibold text-gray-800 text-sm">Price Range</h3>
+        <button onclick="resetPrice()" class="text-xs text-primary hover:text-primary-dark font-semibold hover:underline transition-colors">Reset</button>
+      </div>
+      <p class="text-xs text-gray-400 mb-3">Avg price is ₹<span id="avg-price">--</span></p>
+
+      <!-- SVG Chart -->
+      <div class="relative mb-2 rounded-lg overflow-hidden" style="height:52px;">
+        <svg class="w-full h-full" viewBox="0 0 260 52" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:0.3"/>
+              <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.03"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,48 C20,48 25,28 45,30 C65,32 75,38 100,20 C125,2 135,12 155,10 C175,8 185,30 210,28 C235,26 245,42 260,40 L260,52 L0,52 Z"
+                fill="url(#chartGrad)" stroke="none"/>
+          <path d="M0,48 C20,48 25,28 45,30 C65,32 75,38 100,20 C125,2 135,12 155,10 C175,8 185,30 210,28 C235,26 245,42 260,40"
+                fill="none" stroke="#7c3aed" stroke-width="1.8"/>
+        </svg>
+        <!-- Price labels overlay -->
+        <div class="absolute bottom-1 left-1 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow" id="min-label">₹0</div>
+        <div class="absolute bottom-1 right-1 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow" id="max-label">₹2,00,000</div>
+      </div>
+      <input type="range" id="price-range" min="0" max="200000" value="200000" step="500"
+             class="w-full" oninput="filterPrice(this.value)">
+    </div>
+    <div class="h-px bg-gray-100 mb-5"></div>
+
+    <!-- Star Rating -->
+    <div class="mb-6">
+      <h3 class="font-semibold text-gray-800 text-sm mb-3">Star Rating</h3>
+      <div class="space-y-1.5">
+        <label class="flex items-center justify-between cursor-pointer group py-1 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-2">
+            <input type="radio" name="star-filter" value="5" onchange="filterStars(5)" class="accent-primary cursor-pointer">
+            <span class="text-yellow-400 text-sm leading-none">★★★★★</span>
+          </div>
+          <span class="text-xs text-gray-400 font-medium">5 stars</span>
+        </label>
+        <label class="flex items-center justify-between cursor-pointer group py-1 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-2">
+            <input type="radio" name="star-filter" value="4" onchange="filterStars(4)" class="accent-primary cursor-pointer">
+            <span><span class="text-yellow-400 text-sm">★★★★</span><span class="text-gray-200 text-sm">★</span></span>
+          </div>
+          <span class="text-xs text-gray-400 font-medium">4+ stars</span>
+        </label>
+        <label class="flex items-center justify-between cursor-pointer group py-1 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-2">
+            <input type="radio" name="star-filter" value="3" onchange="filterStars(3)" class="accent-primary cursor-pointer">
+            <span><span class="text-yellow-400 text-sm">★★★</span><span class="text-gray-200 text-sm">★★</span></span>
+          </div>
+          <span class="text-xs text-gray-400 font-medium">3+ stars</span>
+        </label>
+        <label class="flex items-center justify-between cursor-pointer group py-1 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center gap-2">
+            <input type="radio" name="star-filter" value="0" checked onchange="filterStars(0)" class="accent-primary cursor-pointer">
+            <span class="text-sm text-gray-500 font-medium">All Ratings</span>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div class="h-px bg-gray-100 mb-5"></div>
+
+    <!-- Category Filter -->
+    <div>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-gray-800 text-sm">Category</h3>
+        <button onclick="resetCategory()" class="text-xs text-primary hover:text-primary-dark font-semibold hover:underline transition-colors">Reset</button>
+      </div>
+      <div id="category-checkboxes" class="space-y-1.5">
+        <!-- JS populates -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== PRODUCT GRID ===== -->
+  <main class="flex-1 min-w-0">
+    <!-- Results bar -->
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm text-gray-500 font-medium">
+        Showing <span id="result-count" class="font-black text-primary">0</span> products
+      </p>
+      <div class="flex items-center gap-2">
+        <select id="sort-select" onchange="renderProducts()"
+                class="text-sm border border-gray-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 text-gray-600 font-medium cursor-pointer transition-all">
+          <option value="default">Sort: Default</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="rating-desc">Rating: High → Low</option>
+          <option value="name-asc">Name: A → Z</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="product-container" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden flex-col items-center justify-center py-24 text-center">
+      <div class="float-icon text-7xl mb-5">🔍</div>
+      <h3 class="text-xl font-bold text-gray-700 mb-2">No products found</h3>
+      <p class="text-gray-400 text-sm mb-6 max-w-xs">Try adjusting your search or filters to find what you're looking for</p>
+      <button onclick="resetAllFilters()"
+              class="bg-gradient-to-r from-primary to-primary-light text-white px-7 py-2.5 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 shadow-md">
+        Reset All Filters
+      </button>
+    </div>
+  </main>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-gray-900 text-gray-400 mt-12">
+  <div class="max-w-[1440px] mx-auto px-6 py-8">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow">
+          <span class="text-white font-black text-xs">SP</span>
+        </div>
+        <span class="text-white font-bold text-base" id="footer-name">ShopPro</span>
+      </div>
+      <p class="text-sm">© 2026 ShopPro | All Rights Reserved</p>
+      <div class="flex gap-5 text-sm">
+        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors">Terms</a>
+        <a href="#" class="hover:text-white transition-colors">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ===== SETTINGS ===== */
+const WEBSITE_NAME = "ShopPro";
+const CURRENCY = "₹";
+
+/* ===== PRODUCTS DATA ===== */
+const PRODUCTS = [
+  {id:1, category:"Phones", name:"iPhone 15", price:79900, image:"images/products/iphone-15.jpg", rating:5, badge:"Top Item"},
+  {id:2, category:"Phones", name:"OnePlus 12", price:64999, image:"images/products/oneplus-12.jpg", rating:4},
+  {id:3, category:"Phones", name:"Google Pixel 8", price:75999, image:"images/products/google-pixel8.jpg", rating:4},
+  {id:4, category:"Phones", name:"Xiaomi 14", price:69999, image:"images/products/xiaomi-14-01.jpg", rating:4},
+  {id:5, category:"Phones", name:"Realme 12 Pro+", price:29999, image:"images/products/realme-12-pro-plus.jpg", rating:3},
+  {id:6, category:"Earphones", name:"AirPods Pro", price:24900, image:"images/products/airpord.jpg", rating:5, badge:"Top Item"},
+  {id:7, category:"Earphones", name:"Boat Airdopes 141", price:1499, image:"images/products/boat141.jpg", rating:3},
+  {id:8, category:"Earphones", name:"JBL Tune 230NC", price:4999, image:"images/products/jbl.jpg", rating:4},
+  {id:9, category:"Earphones", name:"Realme Buds Air 5", price:3999, image:"images/products/realme.jpg", rating:3},
+  {id:10, category:"Earphones", name:"OnePlus Buds Pro 2", price:11999, image:"images/products/oneplus-buds.jpg", rating:4},
+  {id:11, category:"Computers", name:"MacBook Air M2", price:114900, image:"images/products/macbook.jpg", rating:5, badge:"Top Item"},
+  {id:12, category:"Computers", name:"HP Pavilion 15", price:55999, image:"images/products/hp-.jpg", rating:3},
+  {id:13, category:"Computers", name:"Dell XPS 13", price:129999, image:"images/products/dellxp.jpg", rating:5},
+  {id:14, category:"Computers", name:"Lenovo IdeaPad Slim 5", price:62999, image:"images/products/slim5.jpg", rating:4},
+  {id:15, category:"Computers", name:"Asus ROG Strix G16", price:149999, image:"images/products/g16.jpg", rating:5, badge:"Sale"},
+  {id:16, category:"Beauty", name:"Lakme Face Cream", price:299, image:"images/products/face-cream.jpg", rating:4},
+  {id:17, category:"Beauty", name:"Maybelline Mascara", price:499, image:"images/products/maskara.jpg", rating:4},
+  {id:18, category:"Beauty", name:"Mamaearth Vitamin C Serum", price:599, image:"images/products/mamaearth.jpg", rating:5, badge:"New"},
+  {id:19, category:"Beauty", name:"Garnier Face Wash", price:249, image:"images/products/garnier.jpg", rating:3},
+  {id:20, category:"Beauty", name:"L'Oreal Shampoo", price:699, image:"images/products/loreal.jpg", rating:4},
+  {id:21, category:"Clothes", name:"Men Casual Shirt", price:899, image:"images/products/shirt.jpg", rating:3},
+  {id:22, category:"Clothes", name:"Women Kurti", price:1199, image:"images/products/kurti.jpg", rating:4},
+  {id:23, category:"Clothes", name:"Denim Jeans", price:1499, image:"images/products/jeans.jpg", rating:4, badge:"Sale"},
+  {id:24, category:"Clothes", name:"Men T-Shirt", price:599, image:"images/products/tshirt.jpg", rating:3},
+  {id:25, category:"Clothes", name:"Women Saree", price:2499, image:"images/products/saree.jpg", rating:5, badge:"Top Item"},
+  {id:26, category:"Toys", name:"Remote Control Car", price:1299, image:"images/products/car.jpg", rating:4, badge:"New"},
+  {id:27, category:"Toys", name:"Barbie Doll", price:999, image:"images/products/doll.jpg", rating:4},
+  {id:28, category:"Toys", name:"Lego Classic Set", price:2499, image:"images/products/lego.jpg", rating:5},
+  {id:29, category:"Toys", name:"Hot Wheels Pack", price:499, image:"images/products/hot.jpg", rating:3},
+  {id:30, category:"Appliances", name:"LG Refrigerator", price:28999, image:"images/products/fridge.jpg", rating:5},
+  {id:31, category:"Appliances", name:"Samsung Washing Machine", price:21999, image:"images/products/washing-machine.jpg", rating:4},
+  {id:32, category:"Appliances", name:"Philips Air Fryer", price:8999, image:"images/products/fryer.jpg", rating:4, badge:"New"},
+  {id:33, category:"Smart Gadgets", name:"Apple Watch Series 9", price:41900, image:"images/products/apple.jpg", rating:5, badge:"Top Item"},
+  {id:34, category:"Smart Gadgets", name:"Amazon Echo Dot", price:4499, image:"images/products/dot.jpg", rating:4},
+  {id:35, category:"Smart Gadgets", name:"Mi Smart Band 8", price:3499, image:"images/products/mi.jpg", rating:4, badge:"Sale"},
+  {id:36, category:"Smart Gadgets", name:"Fitbit Versa 4", price:19999, image:"images/products/fitbit.jpg", rating:4},
+  {id:37, category:"Home Items", name:"Office Chair", price:4999, image:"images/products/office-chair.jpg", rating:3},
+  {id:38, category:"Home Items", name:"Wooden Study Table", price:6999, image:"images/products/study-table.jpg", rating:4},
+  {id:39, category:"Home Items", name:"Wall Clock", price:899, image:"images/products/wall-clock.jpg", rating:3},
+  {id:40, category:"Home Items", name:"LED Ceiling Light", price:999, image:"images/products/led.jpg", rating:4},
+  {id:41, category:"Food", name:"Basmati Rice 5kg", price:599, image:"images/products/rice.jpg", rating:4},
+  {id:42, category:"Food", name:"Olive Oil 1L", price:799, image:"images/products/oil.jpg", rating:5},
+  {id:43, category:"Food", name:"Amul Butter 500g", price:285, image:"images/products/butter.jpg", rating:5},
+  {id:44, category:"Food", name:"Aashirvaad Atta 5kg", price:349, image:"images/products/atta.jpg", rating:4},
+  {id:45, category:"Healthcare", name:"Digital Thermometer", price:299, image:"images/products/thermometer.jpg", rating:4},
+  {id:46, category:"Healthcare", name:"Vitamin C Tablets", price:499, image:"images/products/vitaminc.jpg", rating:5, badge:"New"},
+  {id:47, category:"Healthcare", name:"First Aid Kit", price:899, image:"images/products/first-aid-kit.jpg", rating:4},
+  {id:48, category:"Healthcare", name:"BP Monitor Machine", price:1499, image:"images/products/bp.jpg", rating:5},
+  {id:49,  category:"Phones", name:"Samsung Galaxy S24 Ultra", price:129999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=S24+Ultra", rating:5, badge:"Top Item"},
+  {id:50,  category:"Phones", name:"iPhone 14", price:64900, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=iPhone+14", rating:5, badge:"Sale"},
+  {id:51,  category:"Phones", name:"Vivo V30 Pro", price:39999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Vivo+V30", rating:4},
+  {id:52,  category:"Phones", name:"Oppo Reno 11 Pro", price:34999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Oppo+Reno", rating:4},
+  {id:53,  category:"Phones", name:"Nothing Phone 2a", price:24999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Nothing+2a", rating:4, badge:"New"},
+  {id:54,  category:"Phones", name:"Motorola Edge 50 Pro", price:31999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Moto+Edge", rating:3},
+  {id:55,  category:"Phones", name:"Asus Zenfone 10", price:49999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Zenfone+10", rating:4},
+  {id:56,  category:"Earphones", name:"Sony WH-1000XM5", price:29990, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Sony+XM5", rating:5, badge:"Top Item"},
+  {id:57,  category:"Earphones", name:"Bose QuietComfort 45", price:24990, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bose+QC45", rating:5},
+  {id:58,  category:"Earphones", name:"Sennheiser Momentum 4", price:22999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Sennheiser", rating:5},
+  {id:59,  category:"Earphones", name:"Samsung Galaxy Buds2 Pro", price:14999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Buds2+Pro", rating:4},
+  {id:60,  category:"Earphones", name:"boAt Rockerz 550", price:1799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=boAt+550", rating:3, badge:"Sale"},
+  {id:61,  category:"Computers", name:"MacBook Pro M3 14\"", price:199900, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=MBP+M3", rating:5, badge:"Top Item"},
+  {id:62,  category:"Computers", name:"Acer Aspire 7", price:49999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Acer+A7", rating:4},
+  {id:63,  category:"Computers", name:"MSI Katana GF66", price:79999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=MSI+Katana", rating:4, badge:"Sale"},
+  {id:64,  category:"Computers", name:"Surface Laptop 5", price:109999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Surface+L5", rating:4},
+  {id:65,  category:"Computers", name:"Chromebook Plus 14", price:29999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Chromebook", rating:3, badge:"New"},
+  {id:66,  category:"Beauty", name:"Nykaa Lip Gloss Set", price:399, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Nykaa+Lip", rating:4, badge:"New"},
+  {id:67,  category:"Beauty", name:"Plum Grape Seed Face Wash", price:299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Plum+FW", rating:5},
+  {id:68,  category:"Beauty", name:"WOW Skin Science Hair Oil", price:449, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=WOW+Oil", rating:4},
+  {id:69,  category:"Beauty", name:"Biotique Bio Papaya Scrub", price:199, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Biotique", rating:3},
+  {id:70,  category:"Beauty", name:"Forest Essentials Lip Balm", price:875, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=F.Essential", rating:5},
+  {id:71,  category:"Beauty", name:"Minimalist SPF 50 Sunscreen", price:649, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=SPF50", rating:5, badge:"Top Item"},
+  {id:72,  category:"Clothes", name:"Women Hoodie", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Hoodie", rating:4},
+  {id:73,  category:"Clothes", name:"Men Chino Trousers", price:1099, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Chinos", rating:4, badge:"Sale"},
+  {id:74,  category:"Clothes", name:"Girls Leggings Pack of 3", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Leggings", rating:3},
+  {id:75,  category:"Clothes", name:"Kids School Uniform Set", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Uniform", rating:4},
+  {id:76,  category:"Clothes", name:"Men Ethnic Kurta", price:1499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Kurta", rating:5, badge:"New"},
+  {id:77,  category:"Clothes", name:"Women Blazer", price:2199, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Blazer", rating:4},
+  {id:78,  category:"Clothes", name:"Sports Shorts", price:499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Shorts", rating:3},
+  {id:79,  category:"Toys", name:"Magnetic Building Blocks 60pc", price:1799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Mag+Blocks", rating:5, badge:"New"},
+  {id:80,  category:"Toys", name:"Puzzle 1000 Pieces", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Puzzle", rating:4},
+  {id:81,  category:"Toys", name:"Play-Doh Mega Set", price:899, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Play-Doh", rating:5},
+  {id:82,  category:"Toys", name:"Nerf Blaster Gun", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Nerf", rating:4},
+  {id:83,  category:"Toys", name:"Wooden Train Set", price:1599, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Train+Set", rating:4},
+  {id:84,  category:"Appliances", name:"Dyson V15 Vacuum Cleaner", price:52900, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dyson+V15", rating:5, badge:"Top Item"},
+  {id:85,  category:"Appliances", name:"Bajaj Mixer Grinder 750W", price:3499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Mixer", rating:4},
+  {id:86,  category:"Appliances", name:"Havells Toaster 4-Slice", price:2299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Toaster", rating:3},
+  {id:87,  category:"Appliances", name:"Voltas 1.5T Split AC", price:34999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Voltas+AC", rating:4, badge:"Sale"},
+  {id:88,  category:"Appliances", name:"Instant Pot Pressure Cooker", price:7499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Instant+Pot", rating:5, badge:"New"},
+  {id:89,  category:"Appliances", name:"Morphy Richards Iron 2400W", price:2199, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Iron", rating:4},
+  {id:90,  category:"Smart Gadgets", name:"Google Nest Hub 2nd Gen", price:8999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Nest+Hub", rating:4},
+  {id:91,  category:"Smart Gadgets", name:"Xiaomi Smart Air Purifier 4", price:12999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Air+Purifier", rating:4, badge:"New"},
+  {id:92,  category:"Smart Gadgets", name:"Ring Video Doorbell", price:8499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Ring+Bell", rating:4},
+  {id:93,  category:"Smart Gadgets", name:"TP-Link Tapo Smart Bulb", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Smart+Bulb", rating:4, badge:"Sale"},
+  {id:94,  category:"Smart Gadgets", name:"Samsung Galaxy Watch 6", price:29999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Watch+6", rating:5},
+  {id:95,  category:"Home Items", name:"Sofa Set 3+1+1 Seater", price:24999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Sofa+Set", rating:4, badge:"Sale"},
+  {id:96,  category:"Home Items", name:"Curtains Set of 4 (7 ft)", price:1799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Curtains", rating:3},
+  {id:97,  category:"Home Items", name:"Bathroom Accessories Set", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bath+Set", rating:4},
+  {id:98,  category:"Home Items", name:"Memory Foam Pillow", price:1499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Pillow", rating:5, badge:"New"},
+  {id:99,  category:"Home Items", name:"Stainless Steel Cookware Set", price:3999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Cookware", rating:4},
+  {id:100, category:"Home Items", name:"Bedsheet Set King 6pc", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bedsheet", rating:4},
+  {id:101, category:"Food", name:"Tata Tea Gold 500g", price:249, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Tata+Tea", rating:5},
+  {id:102, category:"Food", name:"Bournvita 1kg Jar", price:399, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bournvita", rating:4},
+  {id:103, category:"Food", name:"Tropicana Mixed Fruit 1L", price:149, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Tropicana", rating:3, badge:"Sale"},
+  {id:104, category:"Food", name:"Dry Fruits Premium Box 500g", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dry+Fruits", rating:5, badge:"Top Item"},
+  {id:105, category:"Food", name:"Organic Honey 500g", price:349, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Honey", rating:5},
+  {id:106, category:"Food", name:"Maggi Noodles Pack of 12", price:132, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Maggi", rating:4},
+  {id:107, category:"Healthcare", name:"Pulse Oximeter Fingertip", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Oximeter", rating:4},
+  {id:108, category:"Healthcare", name:"Yoga Mat Anti-Slip 6mm", price:899, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Yoga+Mat", rating:5, badge:"New"},
+  {id:109, category:"Healthcare", name:"Omega-3 Fish Oil Capsules", price:449, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Omega3", rating:4},
+  {id:110, category:"Healthcare", name:"Whey Protein 1kg Chocolate", price:1499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Whey+Protein", rating:5, badge:"Top Item"},
+  {id:111, category:"Healthcare", name:"Nebulizer Machine", price:1999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Nebulizer", rating:4},
+  {id:112, category:"Sports", name:"Adidas Running Shoes", price:5999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Adidas+Run", rating:5, badge:"Top Item"},
+  {id:113, category:"Sports", name:"Cosco Cricket Kit Junior", price:3499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Cricket+Kit", rating:4},
+  {id:114, category:"Sports", name:"Nivia Football Size 5", price:999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Football", rating:4},
+  {id:115, category:"Sports", name:"Strauss Badminton Set", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Badminton", rating:4, badge:"New"},
+  {id:116, category:"Sports", name:"Skipping Rope Digital", price:499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Skip+Rope", rating:3},
+  {id:117, category:"Sports", name:"Resistance Bands Set 5pc", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bands", rating:4, badge:"Sale"},
+  {id:118, category:"Sports", name:"Dumbbell Set 10kg Pair", price:2499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dumbbell", rating:5},
+  {id:119, category:"Sports", name:"Swimming Goggles Pro", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Goggles", rating:4},
+  {id:120, category:"Sports", name:"Cycling Helmet Adjustable", price:1599, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Helmet", rating:4, badge:"New"},
+  {id:121, category:"Gaming", name:"PlayStation 5 Slim", price:54990, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=PS5+Slim", rating:5, badge:"Top Item"},
+  {id:122, category:"Gaming", name:"Xbox Series X", price:52990, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Xbox+X", rating:5},
+  {id:123, category:"Gaming", name:"Nintendo Switch OLED", price:32999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Switch+OLED", rating:5, badge:"Sale"},
+  {id:124, category:"Gaming", name:"Razer DeathAdder V3 Mouse", price:5999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Razer+Mouse", rating:4},
+  {id:125, category:"Gaming", name:"Mechanical Keyboard RGB", price:4499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Mech+KB", rating:4, badge:"New"},
+  {id:126, category:"Gaming", name:"27\" 144Hz Gaming Monitor", price:18999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=144Hz+Mon", rating:5},
+  {id:127, category:"Gaming", name:"Gaming Headset 7.1 Surround", price:3499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Gaming+HS", rating:4},
+  {id:128, category:"Gaming", name:"PS5 DualSense Controller", price:5999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=DualSense", rating:5},
+  {id:129, category:"Gaming", name:"Gaming Chair Ergonomic", price:12999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Game+Chair", rating:4, badge:"Sale"},
+  {id:130, category:"Books", name:"Atomic Habits – James Clear", price:349, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Atomic+Habits", rating:5, badge:"Top Item"},
+  {id:131, category:"Books", name:"The Alchemist – Paulo Coelho", price:199, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Alchemist", rating:5},
+  {id:132, category:"Books", name:"Rich Dad Poor Dad", price:249, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Rich+Dad", rating:5, badge:"Sale"},
+  {id:133, category:"Books", name:"Harry Potter Box Set 7 books", price:2499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=HP+Box+Set", rating:5},
+  {id:134, category:"Books", name:"The Psychology of Money", price:299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Psych+Money", rating:5, badge:"New"},
+  {id:135, category:"Books", name:"NCERT Complete Set Cl. 12", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=NCERT+12", rating:4},
+  {id:136, category:"Books", name:"Think and Grow Rich", price:199, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Think+Rich", rating:4},
+  {id:137, category:"Bags", name:"Wildcraft Backpack 45L", price:2499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Wildcraft+BP", rating:4, badge:"New"},
+  {id:138, category:"Bags", name:"Women Sling Bag Tan", price:999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Sling+Bag", rating:4},
+  {id:139, category:"Bags", name:"Samsonite Carry-On Trolley", price:7999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Trolley", rating:5, badge:"Top Item"},
+  {id:140, category:"Bags", name:"Leather Wallet for Men", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Wallet", rating:4},
+  {id:141, category:"Bags", name:"Laptop Sleeve 15.6\"", price:599, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Laptop+Sleeve", rating:3, badge:"Sale"},
+  {id:142, category:"Bags", name:"Gym Duffle Bag 40L", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Duffle+Bag", rating:4},
+  {id:143, category:"Footwear", name:"Nike Air Max 270", price:12995, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Nike+AM270", rating:5, badge:"Top Item"},
+  {id:144, category:"Footwear", name:"Puma Sneakers Men", price:3499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Puma+Sneaker", rating:4},
+  {id:145, category:"Footwear", name:"Liberty Formal Shoes", price:2199, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Formal+Shoes", rating:4, badge:"Sale"},
+  {id:146, category:"Footwear", name:"Women Heels 3 inch", price:1499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Heels", rating:3},
+  {id:147, category:"Footwear", name:"Crocs Classic Clogs", price:3999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Crocs", rating:4, badge:"New"},
+  {id:148, category:"Footwear", name:"Slippers Daily Wear Men", price:499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Slippers", rating:3},
+  {id:149, category:"Footwear", name:"Sports Socks Pack of 6", price:349, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Socks", rating:4},
+  {id:150, category:"Jewellery", name:"Gold Plated Necklace Set", price:1499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Necklace", rating:4, badge:"New"},
+  {id:151, category:"Jewellery", name:"Silver Toe Ring Set", price:499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Toe+Ring", rating:4},
+  {id:152, category:"Jewellery", name:"Rose Gold Earrings Studs", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Earrings", rating:5, badge:"Top Item"},
+  {id:153, category:"Jewellery", name:"Men Stainless Steel Bracelet", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bracelet", rating:4},
+  {id:154, category:"Jewellery", name:"Diamond-Cut Stone Ring", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Stone+Ring", rating:4, badge:"Sale"},
+  {id:155, category:"Jewellery", name:"Anklet Oxidised Silver", price:399, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Anklet", rating:3},
+  {id:156, category:"Stationery", name:"Classmate Notebook Pack 12", price:299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Notebooks", rating:4},
+  {id:157, category:"Stationery", name:"Parker Ink Pen Set", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Parker+Pen", rating:5, badge:"New"},
+  {id:158, category:"Stationery", name:"Drawing Board A3 with Clips", price:899, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Draw+Board", rating:4},
+  {id:159, category:"Stationery", name:"Sticky Notes 400 Sheets", price:149, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Sticky+Notes", rating:4},
+  {id:160, category:"Stationery", name:"Casio Scientific Calculator", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Calculator", rating:5, badge:"Top Item"},
+  {id:161, category:"Stationery", name:"Whiteboard Marker Set 12 Col", price:349, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Markers", rating:3},
+  {id:162, category:"Stationery", name:"Art Colour Pencils 72pc", price:599, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Colour+Pen", rating:5, badge:"Sale"},
+  {id:163, category:"Automotive", name:"Car Dash Camera Full HD", price:3499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dash+Cam", rating:4, badge:"New"},
+  {id:164, category:"Automotive", name:"Tyre Inflator Portable 12V", price:1799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Tyre+Pump", rating:4},
+  {id:165, category:"Automotive", name:"Car Vacuum Cleaner Wet/Dry", price:1299, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Car+Vac", rating:3, badge:"Sale"},
+  {id:166, category:"Automotive", name:"Bluetooth FM Transmitter", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=FM+Trans", rating:4},
+  {id:167, category:"Automotive", name:"Car Seat Cover Full Set", price:2999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Seat+Cover", rating:4},
+  {id:168, category:"Automotive", name:"Steering Wheel Lock", price:799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Steer+Lock", rating:3},
+  {id:169, category:"Automotive", name:"Car Polish & Wax Kit", price:599, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Car+Polish", rating:4},
+  {id:170, category:"Pets", name:"Royal Canin Dog Food 3kg", price:1899, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dog+Food", rating:5, badge:"Top Item"},
+  {id:171, category:"Pets", name:"Cat Litter Tray + Scoop", price:699, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Cat+Litter", rating:4},
+  {id:172, category:"Pets", name:"Pet Grooming Brush Set", price:499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Grooming", rating:4, badge:"New"},
+  {id:173, category:"Pets", name:"Dog Collar + Leash Combo", price:399, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dog+Collar", rating:4},
+  {id:174, category:"Pets", name:"Aquarium Starter Kit 40L", price:2499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Aquarium", rating:5},
+  {id:175, category:"Pets", name:"Bird Cage Stainless Steel", price:1799, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bird+Cage", rating:4},
+  {id:176, category:"Pets", name:"Pedigree Treats Variety Pack", price:349, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dog+Treats", rating:5, badge:"Sale"},
+  {id:177, category:"Furniture", name:"Engineered Wood Bookshelf 5-Tier", price:4999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bookshelf", rating:4, badge:"Sale"},
+  {id:178, category:"Furniture", name:"Foldable Dining Table 4-Seater", price:8999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Dining+Table", rating:4},
+  {id:179, category:"Furniture", name:"Recliner Chair Modern", price:14999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Recliner", rating:5, badge:"Top Item"},
+  {id:180, category:"Furniture", name:"Kids Bunk Bed with Ladder", price:12499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bunk+Bed", rating:4},
+  {id:181, category:"Furniture", name:"TV Unit with Glass Shelves", price:6999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=TV+Unit", rating:4, badge:"New"},
+  {id:182, category:"Furniture", name:"Bar Stool Set of 2", price:3499, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Bar+Stool", rating:3},
+  {id:183, category:"Furniture", name:"Garden Swing Chair", price:5999, image:"https://placehold.co/300x300/ede9fe/7c3aed?text=Swing+Chair", rating:4},
+];
+
+/* ===== STATE ===== */
+let activeCategory = "All";
+let activePriceMax = 200000;
+let activeStarMin = 0;
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+/* ===== INIT ===== */
+document.getElementById("site-name").innerText = WEBSITE_NAME;
+document.getElementById("hero-name").innerText = WEBSITE_NAME;
+document.getElementById("footer-name").innerText = WEBSITE_NAME;
+document.getElementById("total-product-count").innerText = PRODUCTS.length;
+
+const categories = ["All", ...new Set(PRODUCTS.map(p => p.category))];
+document.getElementById("category-count").innerText = categories.length - 1;
+
+const avgP = Math.round(PRODUCTS.reduce((s,p) => s+p.price,0) / PRODUCTS.length);
+document.getElementById("avg-price").innerText = avgP.toLocaleString("en-IN");
+
+updateFavCount();
+
+/* ===== FAV COUNT ===== */
+function updateFavCount() {
+  const cnt = document.getElementById("fav-count");
+  if (!cnt) return;
+  if (wishlist.length > 0) {
+    cnt.textContent = wishlist.length;
+    cnt.classList.remove("hidden");
+  } else {
+    cnt.classList.add("hidden");
+  }
+}
+
+/* ===== SHOW WISHLIST ===== */
+function showWishlist() {
+  if (wishlist.length === 0) {
+    activeCategory = "All";
+  } else {
+    // Filter to only wishlisted items
+    const wishIds = wishlist;
+    const container = document.getElementById("product-container");
+    const filtered = PRODUCTS.filter(p => wishIds.includes(p.id));
+    document.getElementById("result-count").innerText = filtered.length;
+    container.innerHTML = filtered.map(p => buildCard(p)).join("");
+    document.getElementById("empty-state").classList.add("hidden");
+    if (filtered.length === 0) {
+      container.innerHTML = "";
+      document.getElementById("empty-state").classList.remove("hidden");
+      document.getElementById("empty-state").classList.add("flex");
+    }
+  }
+}
+
+/* ===== CATEGORY TABS ===== */
+function buildCategoryTabs() {
+  const tabsEl = document.getElementById("category-tabs");
+  tabsEl.innerHTML = "";
+  categories.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = `cat-tab flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border transition-all
+                     ${cat === activeCategory
+                        ? "active border-primary"
+                        : "border-gray-200 bg-white text-gray-600"}`;
+    btn.textContent = cat;
+    btn.onclick = () => { activeCategory = cat; buildCategoryTabs(); buildCategoryCheckboxes(); renderProducts(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+/* ===== CATEGORY CHECKBOXES (sidebar) ===== */
+function buildCategoryCheckboxes() {
+  const container = document.getElementById("category-checkboxes");
+  container.innerHTML = "";
+  const cats = [...new Set(PRODUCTS.map(p => p.category))];
+  cats.forEach(cat => {
+    const isChecked = activeCategory === cat || activeCategory === "All";
+    const count = PRODUCTS.filter(p => p.category === cat).length;
+    const id = "chk-" + cat.replace(/\s/g,"_");
+    container.innerHTML += `
+      <label for="${id}" class="flex items-center justify-between cursor-pointer group py-1 px-2 rounded-xl hover:bg-gray-50 transition-colors">
+        <div class="flex items-center gap-2.5">
+          <input type="checkbox" id="${id}" ${isChecked ? "checked" : ""}
+                 onchange="toggleCategoryCheck('${cat}', this.checked)"
+                 class="w-4 h-4 cursor-pointer rounded accent-primary">
+          <span class="text-sm text-gray-600 group-hover:text-primary transition-colors font-medium">${cat}</span>
+        </div>
+        <span class="text-[11px] text-primary bg-purple-50 px-2 py-0.5 rounded-full font-bold">${count}</span>
+      </label>`;
+  });
+}
+
+function toggleCategoryCheck(cat, checked) {
+  activeCategory = checked ? cat : "All";
+  buildCategoryTabs();
+  buildCategoryCheckboxes();
+  renderProducts();
+}
+
+/* ===== FILTERS ===== */
+function filterPrice(val) {
+  activePriceMax = parseInt(val);
+  document.getElementById("max-label").textContent = "₹" + parseInt(val).toLocaleString("en-IN");
+  const pct = (val / 200000) * 100;
+  document.getElementById("price-range").style.setProperty('--val', pct + '%');
+  renderProducts();
+}
+
+function filterStars(min) { activeStarMin = min; renderProducts(); }
+
+function resetPrice() {
+  activePriceMax = 200000;
+  document.getElementById("price-range").value = 200000;
+  document.getElementById("max-label").textContent = "₹2,00,000";
+  document.getElementById("price-range").style.setProperty('--val', '100%');
+  renderProducts();
+}
+
+function resetCategory() {
+  activeCategory = "All";
+  buildCategoryTabs();
+  buildCategoryCheckboxes();
+  renderProducts();
+}
+
+function resetAllFilters() {
+  activeCategory = "All"; activePriceMax = 200000; activeStarMin = 0;
+  document.getElementById("search-input").value = "";
+  document.getElementById("price-range").value = 200000;
+  document.getElementById("price-range").style.setProperty('--val', '100%');
+  document.getElementById("max-label").textContent = "₹2,00,000";
+  document.querySelector('input[name="star-filter"][value="0"]').checked = true;
+  buildCategoryTabs(); buildCategoryCheckboxes(); renderProducts();
+}
+
+/* ===== CART ===== */
+function getCart() { return JSON.parse(localStorage.getItem("cart")) || []; }
+function saveCart(cart) { localStorage.setItem("cart", JSON.stringify(cart)); }
+function updateCartCount() {
+  const cart = getCart();
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById("cart-count").innerText = total;
+}
+
+function addToCart(id, btn) {
+  const cart = getCart();
+  const product = PRODUCTS.find(p => p.id === id);
+  const existing = cart.find(i => i.id === id);
+  if (existing) { existing.qty += 1; }
+  else { cart.push({...product, qty: 1}); }
+  saveCart(cart);
+  updateCartCount();
+  animateToCart(btn);
+
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = `<svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Added!`;
+  btn.classList.add("!bg-green-500");
+  btn.style.background = "linear-gradient(135deg, #10b981, #34d399)";
+  setTimeout(() => {
+    btn.innerHTML = origHTML;
+    btn.style.background = "";
+    btn.classList.remove("!bg-green-500");
+  }, 1300);
+}
+
+function animateToCart(btn) {
+  const card = btn.closest(".product-card");
+  const img = card.querySelector("img");
+  const cartEl = document.getElementById("cart-icon");
+  if (!img || !cartEl) return;
+  const imgRect = img.getBoundingClientRect();
+  const cartRect = cartEl.getBoundingClientRect();
+
+  const clone = img.cloneNode(true);
+  Object.assign(clone.style, {
+    position: "fixed", top: imgRect.top + "px", left: imgRect.left + "px",
+    width: imgRect.width + "px", height: imgRect.height + "px",
+    borderRadius: "50%", zIndex: "9999", pointerEvents: "none",
+    transition: "all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+    objectFit: "cover", opacity: "1", boxShadow: "0 4px 20px rgba(124,58,237,0.3)"
+  });
+  document.body.appendChild(clone);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      Object.assign(clone.style, {
+        top: cartRect.top + "px", left: cartRect.left + "px",
+        width: "28px", height: "28px", opacity: "0"
+      });
+    });
+  });
+  setTimeout(() => clone.remove(), 800);
+}
+
+/* ===== WISHLIST ===== */
+function toggleWishlist(id, btn) {
+  const idx = wishlist.indexOf(id);
+  if (idx === -1) {
+    wishlist.push(id);
+    btn.classList.add("active");
+    btn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+  } else {
+    wishlist.splice(idx, 1);
+    btn.classList.remove("active");
+    btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+  }
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  updateFavCount();
+}
+
+/* ===== STAR RENDER ===== */
+function renderStars(rating) {
+  let html = '<div class="flex gap-0.5">';
+  for (let i = 1; i <= 5; i++) {
+    html += i <= rating
+      ? `<svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`
+      : `<svg class="w-3 h-3 text-gray-200" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+  }
+  return html + '</div>';
+}
+
+/* ===== BADGE ===== */
+const badgeStyle = {
+  "Top Item": "bg-gradient-to-r from-yellow-400 to-amber-400 text-gray-900",
+  "Sale":     "bg-gradient-to-r from-emerald-500 to-green-400 text-white",
+  "New":      "bg-gradient-to-r from-primary to-accent text-white"
+};
+
+/* ===== BUILD CARD ===== */
+function buildCard(p) {
+  const inWish = wishlist.includes(p.id);
+  const badgeCls = badgeStyle[p.badge] || "";
+  const isOnSale = p.badge === "Sale";
+  const origPrice = isOnSale ? Math.round(p.price / 0.85) : null;
+  const discount = isOnSale ? Math.round((1 - p.price / origPrice) * 100) : 0;
+
+  const heartIcon = inWish
+    ? `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`
+    : `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+
+  return `
+    <div class="product-card bg-white rounded-2xl shadow-card overflow-hidden group cursor-pointer">
+      <!-- Image Area -->
+      <div class="relative bg-gradient-to-br from-gray-50 to-purple-50/30 overflow-hidden" style="height:190px;">
+        <img src="${p.image}" alt="${p.name}"
+             class="card-img w-full h-full object-contain p-4"
+             onerror="this.src='https://placehold.co/200x200/f3f0ff/7c3aed?text=${encodeURIComponent(p.name[0])}'"
+             loading="lazy">
+        <!-- Badge -->
+        ${p.badge ? `<span class="absolute top-2.5 left-2.5 ${badgeCls} text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">${p.badge}</span>` : ""}
+        ${isOnSale && discount > 0 ? `<span class="absolute top-2.5 left-2.5 bg-gradient-to-r from-emerald-500 to-green-400 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">-${discount}% OFF</span>` : ""}
+        <!-- Wishlist -->
+        <button onclick="event.stopPropagation(); toggleWishlist(${p.id}, this)"
+                class="wishlist-btn absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md
+                       flex items-center justify-center text-gray-300 hover:text-primary
+                       ${inWish ? 'active text-primary' : ''}">
+          ${heartIcon}
+        </button>
+        <!-- Rating overlay on hover -->
+        <div class="absolute bottom-2.5 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div class="bg-white/95 backdrop-blur rounded-full px-3 py-1 flex items-center gap-1.5 shadow-sm">
+            ${renderStars(p.rating)}
+            <span class="text-xs font-bold text-gray-600">${p.rating}.0</span>
+          </div>
+        </div>
+      </div>
+      <!-- Info Area -->
+      <div class="p-3.5">
+        <!-- Category pill -->
+        <span class="inline-block text-[10px] font-semibold text-primary bg-purple-50 px-2 py-0.5 rounded-full mb-1.5 tracking-wide">${p.category}</span>
+        <!-- Name -->
+        <h3 class="font-semibold text-gray-800 text-sm leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">${p.name}</h3>
+        <!-- Stars (always visible on mobile) -->
+        <div class="flex items-center gap-1.5 mb-2 md:hidden">${renderStars(p.rating)}<span class="text-xs text-gray-400">${p.rating}.0</span></div>
+        <!-- Price Row -->
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="flex items-baseline gap-1.5 flex-wrap">
+              <span class="font-black text-gray-900 text-base">${CURRENCY}${p.price.toLocaleString("en-IN")}</span>
+              ${origPrice ? `<span class="text-xs text-gray-400 line-through">${CURRENCY}${origPrice.toLocaleString("en-IN")}</span>` : ""}
+            </div>
+          </div>
+          <button onclick="addToCart(${p.id}, this)"
+                  class="add-btn text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ===== RENDER PRODUCTS ===== */
+function renderProducts() {
+  const search = document.getElementById("search-input").value.toLowerCase().trim();
+  const sort = document.getElementById("sort-select").value;
+
+  let filtered = PRODUCTS.filter(p => {
+    const matchCat = activeCategory === "All" || p.category === activeCategory;
+    const matchPrice = p.price <= activePriceMax;
+    const matchStar = p.rating >= activeStarMin;
+    const matchSearch = p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search);
+    return matchCat && matchPrice && matchStar && matchSearch;
+  });
+
+  if (sort === "price-asc") filtered.sort((a,b) => a.price - b.price);
+  else if (sort === "price-desc") filtered.sort((a,b) => b.price - a.price);
+  else if (sort === "rating-desc") filtered.sort((a,b) => b.rating - a.rating);
+  else if (sort === "name-asc") filtered.sort((a,b) => a.name.localeCompare(b.name));
+
+  const container = document.getElementById("product-container");
+  const emptyState = document.getElementById("empty-state");
+  document.getElementById("result-count").innerText = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = "";
+    emptyState.classList.remove("hidden");
+    emptyState.classList.add("flex");
+    return;
+  }
+  emptyState.classList.add("hidden");
+  emptyState.classList.remove("flex");
+  container.innerHTML = filtered.map(p => buildCard(p)).join("");
+}
+
+/* ===== MOBILE SIDEBAR ===== */
+document.getElementById("mobile-filter-btn").onclick = () => {
+  document.getElementById("mobile-sidebar").style.transform = "translateX(0)";
+  document.getElementById("sidebar-overlay").classList.add("active");
+};
+document.getElementById("close-sidebar").onclick = closeMobileSidebar;
+document.getElementById("sidebar-overlay").onclick = closeMobileSidebar;
+function closeMobileSidebar() {
+  document.getElementById("mobile-sidebar").style.transform = "translateX(-100%)";
+  document.getElementById("sidebar-overlay").classList.remove("active");
+}
+
+/* ===== SEARCH ===== */
+document.getElementById("search-input").addEventListener("input", renderProducts);
+
+/* ===== BOOT ===== */
+buildCategoryTabs();
+buildCategoryCheckboxes();
+renderProducts();
+updateCartCount();
+</script>
+
+<script>
+/* ===== SESSION / AVATAR ===== */
+(function initSession() {
+  const sess = JSON.parse(localStorage.getItem("sp_session") || "null");
+  const circle = document.getElementById("avatar-circle");
+  const nameEl = document.getElementById("avatar-name");
+  const btn    = document.getElementById("avatar-btn");
+  if (sess && sess.loggedIn) {
+    const initial = (sess.name || "U")[0].toUpperCase();
+    circle.textContent = initial;
+    nameEl.textContent = sess.name.split(" ")[0];
+    nameEl.classList.remove("hidden");
+    // Clicking avatar => sign out
+    btn.href = "#";
+    btn.title = "Signed in as " + sess.name + " · Click to sign out";
+    btn.onclick = (e) => {
+      e.preventDefault();
+      if (confirm("Sign out of ShopPro?")) {
+        localStorage.removeItem("sp_session");
+        window.location.reload();
+      }
+    };
+  } else {
+    circle.textContent = "?";
+    btn.title = "Sign in";
+  }
+})();
+</script>
+</body>
+</html>
